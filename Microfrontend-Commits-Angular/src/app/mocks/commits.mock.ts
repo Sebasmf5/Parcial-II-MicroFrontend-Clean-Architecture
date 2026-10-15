@@ -1,4 +1,4 @@
-import { Commit } from '../app/core/domain/models/commit.model';
+import { Commit } from '../core/domain/models/commit.model';
 
 /** Datos simulados para desarrollo y pruebas del microfrontend. */
 export const mockCommits: Commit[] = [
