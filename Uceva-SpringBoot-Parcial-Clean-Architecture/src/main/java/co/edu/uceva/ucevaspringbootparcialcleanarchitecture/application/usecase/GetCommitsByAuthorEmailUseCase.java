@@ -12,6 +12,8 @@ public class GetCommitsByAuthorEmailUseCase {
         this.commitRepository = commitRepository;
     }
 
-    public List<Commit> getCommitsByAuthorEmail(String authorEmail) { return commitRepository.getCommitsByAuthorEmail(authorEmail);}
+    public List<Commit> execute(String authorEmail) {
+        return commitRepository.getCommitsByAuthorEmail(authorEmail);
+    }
 
 }

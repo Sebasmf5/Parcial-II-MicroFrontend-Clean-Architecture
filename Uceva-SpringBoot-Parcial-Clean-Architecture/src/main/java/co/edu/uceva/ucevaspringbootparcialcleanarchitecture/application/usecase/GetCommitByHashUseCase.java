@@ -9,5 +9,7 @@ public class GetCommitByHashUseCase {
         this.commitRepository = commitRepository;
     }
 
-    public Commit getCommitByHash(String hash) { return commitRepository.getCommitByHash(hash); }
+    public Commit execute(String hash) {
+        return commitRepository.getCommitByHash(hash);
+    }
 }

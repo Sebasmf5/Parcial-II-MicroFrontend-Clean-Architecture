@@ -12,5 +12,7 @@ public class GetAllCommitsUseCase {
         this.commitRepository = commitRepository;
     }
 
-    public List<Commit> getAllCommits() { return commitRepository.getAllCommits(); }
+    public List<Commit> execute() {
+        return commitRepository.getAllCommits();
+    }
 }
