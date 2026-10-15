@@ -1,0 +1,44 @@
+<section class="d-flex flex-wrap gap-2 mb-3">
+    @for(filter of filters; track filter.value){
+        <dsb-button-atom
+            [idButton]="filter.value"
+            [text]="filter.text"
+            [type]="selectedFilter === filter.value ? 'primary' : 'light'"
+            (clicker)="onFilter($event)" >
+        </dsb-button-atom>
+    }
+</section>
+
+@switch(detailState){
+
+    @case('loading'){
+        <app-alert alertState="loading" text="Cargando Detalle..." ></app-alert>
+    }
+
+    @case('error'){
+        <app-alert alertState="error" text="Error al Cargar el Detalle" ></app-alert>
+    }
+
+    @case('success'){
+        @if(selectedUser){
+            <app-internet-detail [user]="selectedUser" ></app-internet-detail>
+        }
+    }
+
+}
+
+@switch(state){
+
+    @case('loading'){
+        <app-alert alertState="loading" text="Cargando Usuarios..." ></app-alert>
+    }
+
+    @case('error'){
+        <app-alert alertState="error" text="Error al Cargar los Usuarios" ></app-alert>
+    }
+
+    @case('success'){
+        <app-internet-table [users]="users" (selected)="onSelect($event)" ></app-internet-table>
+    }
+
+}
