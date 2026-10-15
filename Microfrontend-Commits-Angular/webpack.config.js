@@ -3,6 +3,7 @@ const { shareAll, withModuleFederationPlugin } = require('@angular-architects/mo
 module.exports = withModuleFederationPlugin({
 
   name: 'mf-commits',
+  filename: remoteEntry.js,
 
   exposes: {
     './Component': './src/app/app.ts',
