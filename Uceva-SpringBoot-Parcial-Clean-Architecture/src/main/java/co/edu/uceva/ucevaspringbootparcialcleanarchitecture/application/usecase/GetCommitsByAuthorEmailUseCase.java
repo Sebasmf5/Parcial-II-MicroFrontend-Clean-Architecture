@@ -5,13 +5,13 @@ import co.edu.uceva.ucevaspringbootparcialcleanarchitecture.domain.repository.Co
 
 import java.util.List;
 
-public class GetCommitsByAuthor {
+public class GetCommitsByAuthorEmailUseCase {
     private final CommitRepository commitRepository;
 
-    public GetCommitsByAuthor(CommitRepository commitRepository) {
+    public GetCommitsByAuthorEmailUseCase(CommitRepository commitRepository) {
         this.commitRepository = commitRepository;
     }
 
-    public List<Commit> getCommitsByAuthor(String author) { return commitRepository.getCommitsByAuthor(author);}
+    public List<Commit> getCommitsByAuthorEmail(String authorEmail) { return commitRepository.getCommitsByAuthorEmail(authorEmail);}
 
 }
