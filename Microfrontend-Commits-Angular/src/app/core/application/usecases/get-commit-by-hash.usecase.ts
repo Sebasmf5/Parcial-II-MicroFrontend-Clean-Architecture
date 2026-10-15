@@ -7,7 +7,7 @@ import { CommitRepository } from '../../domain/repositories/commit.repository';
  * Caso de uso para obtener un commit por su hash.
  *
  * @description
- * Consulta un commit especifico utilizando el contrato del repositorio
+ * Consulta un commit especifico utilizando el repositorio
  * de dominio, sin conocer la fuente de datos.
  *
  * @architecture Clean Architecture
