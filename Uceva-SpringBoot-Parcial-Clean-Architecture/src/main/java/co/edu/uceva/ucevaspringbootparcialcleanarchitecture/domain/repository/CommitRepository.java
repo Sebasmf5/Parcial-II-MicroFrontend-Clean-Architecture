@@ -9,5 +9,5 @@ public abstract class CommitRepository {
     //contrato con los métodos que necesitan sus 3 casos de uso.
     public abstract List<Commit> getAllCommits();
     public abstract Commit getCommitByHash(String hash);
-    public abstract List<Commit> getCommitsByAuthor(String authorName);
+    public abstract List<Commit> getCommitsByAuthorEmail(String authorEmail);
 }
