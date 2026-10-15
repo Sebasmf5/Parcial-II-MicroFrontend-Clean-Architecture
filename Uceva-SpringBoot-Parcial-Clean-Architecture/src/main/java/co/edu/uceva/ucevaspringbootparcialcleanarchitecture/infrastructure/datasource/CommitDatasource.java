@@ -91,7 +91,8 @@ public class CommitDatasource {
     private List<String> generateAuthorEmails(List<String> authorNames) {
         List<String> authorEmails = new ArrayList<>();
         for (String authorName : authorNames) {
-            authorEmails.add(faker.internet().emailAddress(authorName));
+            String cleanUser = authorName.toLowerCase().replace(" ", ".");
+            authorEmails.add(faker.internet().emailAddress(cleanUser));
         }
         return authorEmails;
     }
