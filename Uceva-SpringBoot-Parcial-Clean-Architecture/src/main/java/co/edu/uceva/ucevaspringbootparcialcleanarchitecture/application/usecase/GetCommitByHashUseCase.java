@@ -10,6 +10,9 @@ public class GetCommitByHashUseCase {
     }
 
     public Commit execute(String hash) {
-        return commitRepository.getCommitByHash(hash);
+        if (hash == null || hash.isBlank()) {
+            throw new IllegalArgumentException("El hash no puede ser nulo");
+        }
+        return commitRepository.getCommitByHash(hash.trim());
     }
 }

@@ -13,6 +13,9 @@ public class GetCommitsByAuthorEmailUseCase {
     }
 
     public List<Commit> execute(String authorEmail) {
+        if (authorEmail == null || authorEmail.isEmpty()) {
+            throw new IllegalArgumentException("El email es obligatorio");
+        }
         return commitRepository.getCommitsByAuthorEmail(authorEmail);
     }
 
