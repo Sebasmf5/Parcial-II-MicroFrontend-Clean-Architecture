@@ -1,1 +1,36 @@
-<p>commit-table works!</p>
+<table class="table table-striped border align-middle">
+  <thead>
+    <tr>
+      <th scope="col">Hash</th>
+      <th scope="col">Mensaje</th>
+      <th scope="col">Autor</th>
+      <th scope="col">Rama</th>
+      <th scope="col">Fecha</th>
+      <th scope="col">Archivos</th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (commit of commits; track commit.hash) {
+      <tr>
+        <th scope="row">{{ commit.hash }}</th>
+        <td>{{ commit.message }}</td>
+        <td>
+          {{ commit.authorName }}<br />
+          <small class="text-muted">{{ commit.authorEmail }}</small>
+        </td>
+        <td>
+          <dsb-badge-atom
+            [text]="commit.branch"
+            [type]="branchMap[commit.branch]">
+          </dsb-badge-atom>
+        </td>
+        <td>{{ commit.createdAt | date: 'dd/MM/yyyy HH:mm' }}</td>
+        <td>{{ commit.files.join(', ') }}</td>
+      </tr>
+    } @empty {
+      <tr>
+        <td colspan="6" class="text-center">Sin resultados</td>
+      </tr>
+    }
+  </tbody>
+</table>
