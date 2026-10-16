@@ -1,59 +1,127 @@
-# MicrofrontendCommitsAngular
+# Microfrontend de Commits (Angular)
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.14.
+Microfrontend del Parcial II de Arquitectura de Software (UCEVA). Muestra en una tabla el historial de commits y permite filtrarlos por hash o por correo del autor. Está construido con **Clean Architecture** y **Module Federation**, y consume el microservicio de Spring Boot (`Uceva-SpringBoot-Parcial-Clean-Architecture`) o, si no hay backend, unos datos locales de prueba.
 
-## Development server
+## Tecnologías
 
-To start a local development server, run:
+- Angular 20 (componentes standalone)
+- Webpack Module Federation (`@angular-architects/module-federation`)
+- Bootstrap 5 y `@brejcha13320/design-system-bootstrap`
+- Jest para las pruebas unitarias
+- Compodoc para la documentación del código
 
-```bash
-ng serve
+## Estructura
+
+```text
+src/
+├── app/
+│   ├── core/
+│   │   ├── domain/            # Modelo Commit y contrato CommitRepository
+│   │   ├── application/       # Casos de uso (obtener todos, por hash, por autor)
+│   │   └── infrastructure/    # DataService y repositorios (local y Spring Boot)
+│   ├── mocks/                 # Datos locales de prueba
+│   ├── app.config.ts          # Aquí se elige el provider del repositorio
+│   └── app.routes.ts
+├── presentation/
+│   ├── components/            # alert y commit-table
+│   ├── interfaces/            # Tipos State y AlertState
+│   └── pages/commits/         # Página que usa los casos de uso
+└── environments/              # URL base del backend
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## Cómo fluyen los datos
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
+```text
+CommitsPage → Caso de uso → CommitRepository (contrato) → Implementación → DataService → Mocks o Spring Boot
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+La página y los casos de uso solo conocen el contrato `CommitRepository`. Qué implementación se usa se decide en un solo lugar: `src/app/app.config.ts`.
 
-```bash
-ng generate --help
+## Cambiar de fuente de datos
+
+En `src/app/app.config.ts` deja **un solo** provider sin comentar:
+
+```ts
+// Datos locales (mocks)
+{ provide: CommitRepository, useClass: CommitLocalRepositoryImpl },
+
+// Backend Spring Boot
+//{ provide: CommitRepository, useClass: CommitSpringBootRepositoryImpl },
 ```
 
-## Building
+Guarda el archivo y recarga el navegador. Si no ves el cambio, reinicia `npm start` y recarga con Ctrl+Shift+R.
 
-To build the project run:
+## Cómo ejecutarlo
 
-```bash
-ng build
+1. **Backend** (solo si usas el provider de Spring Boot). Desde `Uceva-SpringBoot-Parcial-Clean-Architecture`:
+
+   ```bash
+   ./gradlew bootRun
+   ```
+
+   - API: `http://localhost:8080/commits`
+   - Swagger: `http://localhost:8080/swagger-ui/index.html`
+
+2. **Microfrontend.** Desde esta carpeta:
+
+   ```bash
+   npm install
+   npm start
+   ```
+
+   - Aplicación: `http://localhost:4202`
+   - Punto de entrada de Module Federation: `http://localhost:4202/remoteEntry.js`
+
+El backend permite peticiones desde `http://localhost:4200` y `http://localhost:4202` (CORS). Si cambias el puerto del microfrontend, actualiza también `CorsConfig` en Spring Boot.
+
+## Endpoints que consume
+
+| Método | Ruta                          | Descripción                      |
+| ------ | ----------------------------- | -------------------------------- |
+| GET    | `/commits`                    | Todos los commits                |
+| GET    | `/commits/{hash}`             | Un commit por su hash            |
+| GET    | `/commits/author/{email}`     | Commits de un autor por su correo |
+
+El backend genera los commits en memoria con JavaFaker cada vez que arranca, así que los hashes cambian entre ejecuciones. Los datos locales son fijos: 5 commits con hashes del `0000001` al `0000005`.
+
+## Module Federation
+
+El microfrontend se llama `mf-commits` y expone la página de commits:
+
+```js
+exposes: {
+  './CommitsPage': './src/presentation/pages/commits/commits.page.ts',
+}
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Un host puede cargarlo así:
 
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
+```ts
+loadRemoteModule({
+  type: 'module',
+  remoteEntry: 'http://localhost:4202/remoteEntry.js',
+  exposedModule: './CommitsPage',
+}).then((m) => m.CommitsPage);
 ```
 
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
+## Pruebas unitarias
 
 ```bash
-ng e2e
+npm test                # corre todas las pruebas y muestra la cobertura
+npm run test:watch      # repite las pruebas al guardar
+npx jest commits.page   # solo los archivos cuyo nombre contenga ese texto
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+Hay pruebas para los casos de uso, los repositorios, el `DataService`, los componentes, la página y las rutas.
 
-## Additional Resources
+## Documentación del código
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+```bash
+npm run compodoc
+```
+
+Genera la carpeta `documentation/` (ignorada en git). Ábrela con `documentation/index.html`.
+
+## Detalle de la pantalla de carga
+
+La página muestra la alerta "Cargando commits..." durante un mínimo de 800 ms (`MIN_LOADING_MS` en `commits.page.ts`), aunque la respuesta llegue antes. Así la carga se alcanza a ver también con el backend en `localhost` o con los datos locales.
