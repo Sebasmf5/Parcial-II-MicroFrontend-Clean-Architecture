@@ -128,4 +128,48 @@ describe('InternetPage', () => {
     expect(component.selectedUser).toBeNull();
     expect(component.detailState).toBe('init');
   });
+
+  it('debe mostrar el título según el filtro', () => {
+    expect(component.listTitle).toBe('Listar todos los usuarios');
+    component.selectedFilter = 'gmail.com';
+    expect(component.listTitle).toBe('Filtrar por dominio: gmail.com');
+  });
+
+  it('debe buscar por id con GetInternetUserByIdUseCase', () => {
+    GetAllUseCaseMock.execute.mockReturnValue(of(INTERNET_USERS_MOCK));
+    GetByIdUseCaseMock.execute.mockReturnValue(of(INTERNET_USERS_MOCK[1]));
+    fixture.detectChanges();
+
+    component.onSearch('2');
+
+    expect(GetByIdUseCaseMock.execute).toHaveBeenCalledWith(2);
+    expect(component.selectedUser).toEqual(INTERNET_USERS_MOCK[1]);
+    expect(component.detailState).toBe('success');
+  });
+
+  it('no debe llamar al caso de uso si el id no es válido', () => {
+    GetAllUseCaseMock.execute.mockReturnValue(of(INTERNET_USERS_MOCK));
+    fixture.detectChanges();
+
+    for (const value of ['', 'abc', '0', '-3', '2.5']) {
+      component.onSearch(value);
+      expect(component.detailState).toBe('error');
+      expect(component.selectedUser).toBeNull();
+    }
+
+    expect(GetByIdUseCaseMock.execute).not.toHaveBeenCalled();
+    expect(component.detailErrorText).toBe('Escribe un id válido (número entero mayor que 0)');
+  });
+
+  it('debe buscar al pulsar Enter en el campo del id', () => {
+    GetAllUseCaseMock.execute.mockReturnValue(of(INTERNET_USERS_MOCK));
+    GetByIdUseCaseMock.execute.mockReturnValue(of(INTERNET_USERS_MOCK[0]));
+    fixture.detectChanges();
+
+    const input: HTMLInputElement = fixture.debugElement.query(By.css('input')).nativeElement;
+    input.value = '1';
+    input.dispatchEvent(new KeyboardEvent('keyup', { key: 'Enter' }));
+
+    expect(GetByIdUseCaseMock.execute).toHaveBeenCalledWith(1);
+  });
 });

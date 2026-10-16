@@ -25,11 +25,12 @@ interface ProviderFilter {
  *
  * @remarks
  * Es la página que este microfrontend expone al Host. Usa los tres
- * casos de uso del módulo y no conoce el servicio ni el microservicio:
+ * casos de uso del módulo y no conoce el servicio ni el microservicio.
+ * La pantalla tiene una sección por caso de uso:
  *
- * - `GetAllInternetUsersUseCase` para el listado inicial y el filtro "Todos".
- * - `GetInternetUsersByProviderUseCase` para los filtros por proveedor.
- * - `GetInternetUserByIdUseCase` para el detalle de un usuario.
+ * - `GetAllInternetUsersUseCase`: listado inicial y botón "Todos".
+ * - `GetInternetUsersByProviderUseCase`: botones de cada proveedor.
+ * - `GetInternetUserByIdUseCase`: buscador por id y botón "Ver" de la tabla.
  */
 @Component({
   selector: 'app-internet',
@@ -83,6 +84,11 @@ export class InternetPage {
    */
   detailState: State = 'init';
 
+  /**
+   * Mensaje que se muestra cuando el detalle no se puede cargar.
+   */
+  detailErrorText = 'Error al Cargar el Detalle';
+
   /** Caso de uso para obtener el listado de usuarios. */
   private getAllInternetUsersUseCase = inject(GetAllInternetUsersUseCase);
 
@@ -91,6 +97,17 @@ export class InternetPage {
 
   /** Caso de uso para obtener usuarios por proveedor. */
   private getInternetUsersByProviderUseCase = inject(GetInternetUsersByProviderUseCase);
+
+  /**
+   * Título de la tabla: dice qué caso de uso llenó el listado.
+   *
+   * @returns "Listar todos los usuarios" o "Filtrar por dominio: <proveedor>"
+   */
+  get listTitle(): string {
+    return this.selectedFilter === 'all'
+      ? 'Listar todos los usuarios'
+      : `Filtrar por dominio: ${this.selectedFilter}`;
+  }
 
   /**
    * Carga el listado inicial de usuarios.
@@ -151,11 +168,35 @@ export class InternetPage {
   }
 
   /**
+   * Busca un usuario por el id escrito en el buscador.
+   *
+   * @remarks
+   * Valida que el id sea un número entero mayor que 0 antes de llamar
+   * al caso de uso. Si no lo es, muestra el mensaje de error sin hacer
+   * la petición.
+   *
+   * @param value - Texto escrito en el campo del id
+   */
+  onSearch(value: string): void {
+    const id = Number(value);
+
+    if (!value || !Number.isInteger(id) || id < 1) {
+      this.selectedUser = null;
+      this.detailErrorText = 'Escribe un id válido (número entero mayor que 0)';
+      this.detailState = 'error';
+      return;
+    }
+
+    this.onSelect(id);
+  }
+
+  /**
    * Carga el detalle de un usuario con `GetInternetUserByIdUseCase`.
    *
    * @param id - Identificador del usuario
    */
   onSelect(id: number): void {
+    this.detailErrorText = 'Error al Cargar el Detalle';
     this.detailState = 'loading';
     this.getInternetUserByIdUseCase.execute(id).subscribe({
       next: (user) => {
