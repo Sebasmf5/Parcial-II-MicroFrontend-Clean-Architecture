@@ -34,7 +34,8 @@ describe('App', () => {
       },
       navLinks: [
         { text: 'Internet', url: '/internet' },
-        { text: 'System', url: '/system' }
+        { text: 'System', url: '/system' },
+        { text: 'Commits', url: '/commits' }
       ]
     });
   });
