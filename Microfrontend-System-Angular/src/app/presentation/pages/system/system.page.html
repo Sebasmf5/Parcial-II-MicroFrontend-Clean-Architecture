@@ -3,7 +3,7 @@
     <div class="col-lg-7">
         <div class="card h-100">
             <div class="card-body">
-                <h6 class="card-title">Caso de uso · Filtrar por dominio del correo</h6>
+                <h6 class="card-title">Caso de uso · Filtrar por familia MIME</h6>
                 <div class="d-flex flex-wrap gap-2">
                     @for(filter of filters; track filter.value){
                         <dsb-button-atom
@@ -25,10 +25,9 @@
                 <div class="d-flex gap-2">
                     <input
                         #idInput
-                        type="number"
-                        min="1"
+                        type="text"
                         class="form-control"
-                        placeholder="Ej: 5"
+                        placeholder="Pega un id (UUID)"
                         aria-label="Id del archivo"
                         (keyup.enter)="onSearch(idInput.value)" />
                     <dsb-button-atom
@@ -55,8 +54,8 @@
     }
 
     @case('success'){
-        @if(selectedUser){
-            <app-system-detail [file]="selectedUser" ></app-system-detail>
+        @if(selectedFile){
+            <app-system-detail [file]="selectedFile" ></app-system-detail>
         }
     }
 

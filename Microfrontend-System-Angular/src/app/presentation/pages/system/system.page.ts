@@ -3,7 +3,7 @@ import { ButtonAtom } from '@brejcha13320/design-system-bootstrap';
 import { GetAllSystemFilesUseCase } from '../../../core/application/usecases/get-all-system-files.usecase';
 import { GetSystemFileByIdUseCase } from '../../../core/application/usecases/get-system-file-by-id.usecase';
 import { GetSystemFilesByMimeFamilyUseCase } from '../../../core/application/usecases/get-system-files-by-mime-family.usecase';
-import { SystemMimeFamily, SystemFile } from '../../../core/domain/models/system.model';
+import { SystemFile, SystemMimeFamily } from '../../../core/domain/models/system.model';
 import { SYSTEM_MODULE_PROVIDERS } from '../../../system.providers';
 import { AlertComponent } from '../../components/alert/alert.component';
 import { SystemDetailComponent } from '../../components/system-detail/system-detail.component';
@@ -11,10 +11,15 @@ import { SystemTableComponent } from '../../components/system-table/system-table
 import { State } from '../../interfaces/state.interface';
 
 /**
+ * Expresión regular de un UUID (el formato de los ids de los archivos).
+ */
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/**
  * Opción del filtro por familia MIME.
  */
-interface ProviderFilter {
-  /** Valor del filtro: una familia MIME o 'all' para todos */
+interface FamilyFilter {
+  /** Valor del filtro: una familia MIME o 'all' para todas */
   value: SystemMimeFamily | 'all';
   /** Texto del botón */
   text: string;
@@ -47,12 +52,13 @@ export class SystemPage {
   /**
    * Botones del filtro por familia MIME.
    */
-  readonly filters: ProviderFilter[] = [
+  readonly filters: FamilyFilter[] = [
     { value: 'all', text: 'Todos' },
-    { value: 'image', text: 'Gmail' },
-    { value: 'outlook.com', text: 'Outlook' },
-    { value: 'yahoo.com', text: 'Yahoo' },
-    { value: 'hotmail.com', text: 'Hotmail' },
+    { value: 'application', text: 'Aplicación' },
+    { value: 'audio', text: 'Audio' },
+    { value: 'image', text: 'Imagen' },
+    { value: 'text', text: 'Texto' },
+    { value: 'video', text: 'Video' },
   ];
 
   /**
@@ -75,7 +81,7 @@ export class SystemPage {
   /**
    * Archivo mostrado en el detalle.
    */
-  selectedUser: SystemFile | null = null;
+  selectedFile: SystemFile | null = null;
 
   /**
    * Estado de la carga del detalle.
@@ -101,12 +107,12 @@ export class SystemPage {
   /**
    * Título de la tabla: dice qué caso de uso llenó el listado.
    *
-   * @returns "Listar todos los archivos" o "Filtrar por dominio: <familia MIME>"
+   * @returns "Listar todos los archivos" o "Filtrar por familia MIME: <familia>"
    */
   get listTitle(): string {
     return this.selectedFilter === 'all'
       ? 'Listar todos los archivos'
-      : `Filtrar por dominio: ${this.selectedFilter}`;
+      : `Filtrar por familia MIME: ${this.selectedFilter}`;
   }
 
   /**
@@ -135,9 +141,9 @@ export class SystemPage {
   /**
    * Carga los archivos de una familia MIME con `GetSystemFilesByMimeFamilyUseCase`.
    *
-   * @param family - Familia MIME del archivo (application, audio, image, text o video)
+   * @param family - Familia MIME (application, audio, image, text o video)
    */
-  loadByProvider(family: SystemMimeFamily): void {
+  loadByMimeFamily(family: SystemMimeFamily): void {
     this.state = 'loading';
     this.getSystemFilesByMimeFamilyUseCase.execute(family, this.countFiles).subscribe({
       next: (files) => {
@@ -157,13 +163,13 @@ export class SystemPage {
    */
   onFilter(value: string): void {
     this.selectedFilter = value as SystemMimeFamily | 'all';
-    this.selectedUser = null;
+    this.selectedFile = null;
     this.detailState = 'init';
 
     if (this.selectedFilter === 'all') {
       this.loadAll();
     } else {
-      this.loadByProvider(this.selectedFilter);
+      this.loadByMimeFamily(this.selectedFilter);
     }
   }
 
@@ -171,18 +177,17 @@ export class SystemPage {
    * Busca un archivo por el id escrito en el buscador.
    *
    * @remarks
-   * Valida que el id sea un número entero mayor que 0 antes de llamar
-   * al caso de uso. Si no lo es, muestra el mensaje de error sin hacer
-   * la petición.
+   * Valida que el id sea un UUID antes de llamar al caso de uso.
+   * Si no lo es, muestra el mensaje de error sin hacer la petición.
    *
    * @param value - Texto escrito en el campo del id
    */
   onSearch(value: string): void {
-    const id = Number(value);
+    const id = value.trim();
 
-    if (!value || !Number.isInteger(id) || id < 1) {
-      this.selectedUser = null;
-      this.detailErrorText = 'Escribe un id válido (número entero mayor que 0)';
+    if (!UUID_REGEX.test(id)) {
+      this.selectedFile = null;
+      this.detailErrorText = 'Escribe un id válido (UUID). Puedes copiarlo de la tabla';
       this.detailState = 'error';
       return;
     }
@@ -193,18 +198,18 @@ export class SystemPage {
   /**
    * Carga el detalle de un archivo con `GetSystemFileByIdUseCase`.
    *
-   * @param id - Identificador del archivo
+   * @param id - Identificador (UUID) del archivo
    */
-  onSelect(id: number): void {
+  onSelect(id: string): void {
     this.detailErrorText = 'Error al Cargar el Detalle';
     this.detailState = 'loading';
     this.getSystemFileByIdUseCase.execute(id).subscribe({
       next: (file) => {
-        this.selectedUser = file;
+        this.selectedFile = file;
         this.detailState = 'success';
       },
       error: () => {
-        this.selectedUser = null;
+        this.selectedFile = null;
         this.detailState = 'error';
       },
     });
