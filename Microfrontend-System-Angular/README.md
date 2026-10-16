@@ -44,7 +44,7 @@ npm run start
 npx jest --coverage
 ```
 
-La cobertura debe quedar por encima del 90% (actualmente 100%). El reporte queda en la carpeta `coverage/`.
+La cobertura debe quedar por encima del 90% (actualmente 100%). Se mide sobre todo el código de `src` (menos mocks, `main.ts` y `bootstrap.ts`). El reporte queda en la carpeta `coverage/`.
 
 ## Documentación técnica con Compodoc
 

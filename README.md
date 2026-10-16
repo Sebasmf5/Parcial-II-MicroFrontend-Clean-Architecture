@@ -10,7 +10,9 @@ Proyecto del Parcial II de Arquitectura de Software (UCEVA). Un microfrontend en
 | `Microfrontend-Commits-Angular`              | Microfrontend con la tabla de commits y los filtros por hash y autor   | 4202   |
 | `Microfrontend-Internet-Angular`             | Microfrontend de usuarios de internet (de mi compañero)                | 4201   |
 | `Microservice-Internet-NodeJS`               | Microservicio Node.js que consume el microfrontend de Internet         | 3001   |
-| `Client-Host-Angular`                        | Host que carga los dos microfrontends con Module Federation            | 4200   |
+| `Microfrontend-System-Angular`               | Microfrontend de archivos del sistema (System)                         | 4203   |
+| `Microservice-System-NodeJS`                 | Microservicio Node.js con faker.js que consume el microfrontend System | 3003   |
+| `Client-Host-Angular`                        | Host que carga los tres microfrontends con Module Federation           | 4200   |
 
 Cada carpeta tiene su propio `README.md` con los detalles.
 
@@ -43,9 +45,11 @@ Para ver los microfrontends integrados se necesitan todos los procesos levantado
 | `Microservice-Internet-NodeJS`   | `npm start`                                          | `http://localhost:3001` |
 | `Microfrontend-Internet-Angular` | `npm start`                                          | `http://localhost:4201` |
 | `Microfrontend-Commits-Angular`  | `npm start`                                          | `http://localhost:4202` |
+| `Microservice-System-NodeJS`     | `npm start`                                          | `http://localhost:3003` |
+| `Microfrontend-System-Angular`   | `npm start`                                          | `http://localhost:4203` |
 | `Client-Host-Angular`            | `npm start`                                          | `http://localhost:4200` |
 
-Luego se abre `http://localhost:4200` y se navega a `/internet` o `/commits`.
+Luego se abre `http://localhost:4200` y se navega a `/internet`, `/commits` o `/system`.
 
 Notas importantes:
 
@@ -59,6 +63,11 @@ Para trabajar sin el backend, el microfrontend puede usar datos locales: se camb
 
 ```bash
 cd Microfrontend-Commits-Angular
+npm test
+```
+
+```bash
+cd Microfrontend-System-Angular
 npm test
 ```
 
