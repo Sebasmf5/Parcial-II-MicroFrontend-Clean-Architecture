@@ -5,70 +5,68 @@
  * en la tabla o en cualquier componente de listado.
  *
  * @remarks
- * Cada archivo debe tener un `id` único, un `filename`, un `email`,
- * el familia MIME (`family`), una dirección IPv4, un sitio web
- * y la fecha de su última conexión.
+ * Cada archivo tiene un `id` único (UUID), un nombre, su tipo MIME,
+ * la carpeta donde está, su tamaño en bytes y su fecha de creación.
  *
  * @example
  * ```ts
  * const archivo: SystemFile = {
- *   id: 1,
- *   filename: 'Maxwell_OReilly',
- *   email: 'maxwell.oreilly@image',
- *   family: 'image',
- *   ipv4: '229.151.59.145',
- *   website: 'https://prestigious-trolley.com',
- *   lastLogin: '2026-10-10'
+ *   id: '9b2d6f7e-3c1a-4f5b-8a60-1d2e3f4a5b6c',
+ *   fileName: 'reporte_anual.pdf',
+ *   mimeType: 'application/pdf',
+ *   directoryPath: '/usr/local/bin',
+ *   size: 204800,
+ *   createdAt: '2025-08-14'
  * };
  * ```
  */
 export interface SystemFile {
-    /** Identificador único del archivo */
-    id: number;
+    /** Identificador único del archivo (UUID) */
+    id: string;
 
-    /** Nombre de archivo */
-    filename: string;
+    /** Nombre del archivo con su extensión */
+    fileName: string;
 
-    /** Correo electrónico */
-    email: string;
+    /** Tipo MIME completo, por ejemplo `image/png` */
+    mimeType: string;
 
-    /** Familia MIME del archivo (application, audio, image, text o video) */
-    family: SystemMimeFamily;
+    /** Ruta de la carpeta donde está el archivo */
+    directoryPath: string;
 
-    /** Dirección IPv4 de la última conexión */
-    ipv4: string;
+    /** Tamaño del archivo en bytes */
+    size: number;
 
-    /** Sitio web personal */
-    website: string;
-
-    /** Fecha de la última conexión (YYYY-MM-DD) */
-    lastLogin: string;
+    /** Fecha de creación del archivo (YYYY-MM-DD) */
+    createdAt: string;
 }
 
 /**
- * Proveedor (dominio) de correo de un archivo.
+ * Familia de un tipo MIME.
  *
  * @remarks
- * Este tipo restringe las familias MIME a los valores que entrega el microservicio:
+ * Es la parte del tipo MIME que va antes de la barra
+ * (en `image/png` la familia es `image`). Este tipo restringe
+ * el filtro a las familias que ofrece el microservicio:
+ * - 'application'
+ * - 'audio'
  * - 'image'
- * - 'outlook.com'
- * - 'yahoo.com'
- * - 'hotmail.com'
+ * - 'text'
+ * - 'video'
  *
  * Se utiliza para filtrar archivos y para mapear badges de colores en la UI.
  *
  * @example
  * ```ts
- * const familia MIME: SystemMimeFamily = 'image';
+ * const familia: SystemMimeFamily = 'image';
  * ```
  */
-export type SystemMimeFamily = 'image' | 'outlook.com' | 'yahoo.com' | 'hotmail.com';
+export type SystemMimeFamily = 'application' | 'audio' | 'image' | 'text' | 'video';
 
 /**
- * Lista de las familias MIME de correo válidos.
+ * Lista de las familias MIME válidas.
  *
  * @remarks
  * Es la misma lista del microservicio. En el microfrontend sirve
- * como referencia de las familias MIME que acepta el filtro.
+ * como referencia de las familias que acepta el filtro.
  */
-export const SYSTEM_MIME_FAMILIES: SystemMimeFamily[] = ['image', 'outlook.com', 'yahoo.com', 'hotmail.com'];
+export const SYSTEM_MIME_FAMILIES: SystemMimeFamily[] = ['application', 'audio', 'image', 'text', 'video'];

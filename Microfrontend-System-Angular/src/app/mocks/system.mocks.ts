@@ -9,21 +9,19 @@ import { SystemFile } from "../core/domain/models/system.model";
  */
 export const SYSTEM_FILES_MOCK: SystemFile[] = [
     {
-        id: 1,
-        filename: 'Maxwell_OReilly',
-        email: 'maxwell.oreilly@image',
-        family: 'image',
-        ipv4: '229.151.59.145',
-        website: 'https://prestigious-trolley.com',
-        lastLogin: '2026-10-10',
+        id: '9b2d6f7e-3c1a-4f5b-8a60-1d2e3f4a5b6c',
+        fileName: 'reporte_anual.pdf',
+        mimeType: 'application/pdf',
+        directoryPath: '/usr/local/bin',
+        size: 204800,
+        createdAt: '2025-08-14',
     },
     {
-        id: 2,
-        filename: 'Jana49',
-        email: 'aileen4@outlook.com',
-        family: 'outlook.com',
-        ipv4: '210.146.56.194',
-        website: 'https://squeaky-fog.name',
-        lastLogin: '2026-10-08',
+        id: '0c8a1b2d-4e5f-4a6b-9c7d-8e9f0a1b2c3d',
+        fileName: 'foto_playa.png',
+        mimeType: 'image/png',
+        directoryPath: '/media',
+        size: 1572864,
+        createdAt: '2025-09-02',
     }
 ];
