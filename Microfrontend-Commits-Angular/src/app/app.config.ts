@@ -1,10 +1,11 @@
-import { provideHttpClient } from '@angular/common/http';
 import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
+
 import { routes } from './app.routes';
 import { CommitRepository } from './core/domain/repositories/commit.repository';
 import { CommitLocalRepositoryImpl } from './core/infrastructure/repositories/local/commit-local.repository.impl';
 import { CommitSpringBootRepositoryImpl } from './core/infrastructure/repositories/spring/commit-spring-boot.repository.impl';
+import { provideHttpClient } from '@angular/common/http';
 
 /**
  * Configuración principal de la aplicación Angular.
@@ -23,22 +24,17 @@ import { CommitSpringBootRepositoryImpl } from './core/infrastructure/repositori
  * @see {@link bootstrapApplication}
  */
 export const appConfig: ApplicationConfig = {
-
   /**
-   * Proveedores globales de la aplicación.
-   *
    * @remarks
    * Se registran servicios y configuraciones esenciales
    * que estarán disponibles en toda la aplicación.
    */
   providers: [
-
     //Local Providers
     //{ provide: CommitRepository, useClass: CommitLocalRepositoryImpl },
 
     //SpringBoot Providers
     { provide: CommitRepository, useClass: CommitSpringBootRepositoryImpl },
-
     /**
      * Proveedor de listeners globales de errores del navegador.
      *
@@ -47,7 +43,6 @@ export const appConfig: ApplicationConfig = {
      * permitiendo un manejo centralizado de excepciones.
      */
     provideBrowserGlobalErrorListeners(),
-
     /**
      * Configuración de la detección de cambios basada en Zone.js.
      *
@@ -57,7 +52,6 @@ export const appConfig: ApplicationConfig = {
      * el rendimiento de la aplicación.
      */
     provideZoneChangeDetection({ eventCoalescing: true }),
-
     /**
      * Proveedor del sistema de enrutamiento.
      *
@@ -68,7 +62,6 @@ export const appConfig: ApplicationConfig = {
      * @see {@link routes}
      */
     provideRouter(routes),
-
     provideHttpClient(),
   ]
 };
