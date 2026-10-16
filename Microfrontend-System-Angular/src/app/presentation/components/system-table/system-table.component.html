@@ -1,0 +1,38 @@
+<table class="table table-striped border">
+	<thead>
+		<tr>
+			<th scope="col">Id</th>
+			<th scope="col">Archivo</th>
+			<th scope="col">Tipo MIME</th>
+			<th scope="col">Carpeta</th>
+			<th scope="col">Tamaño</th>
+			<th scope="col">Creación</th>
+			<th scope="col">Detalle</th>
+		</tr>
+	</thead>
+	<tbody>
+		@for (file of files; track file.id) {
+			<tr>
+				<th scope="row" class="small font-monospace text-nowrap">{{ file.id }}</th>
+				<td>{{ file.fileName }}</td>
+				<td class="text-break">
+					<dsb-badge-atom
+						[text]="file.mimeType"
+						[type]="getBadgeType(file.mimeType)" >
+					</dsb-badge-atom>
+				</td>
+				<td>{{ file.directoryPath }}</td>
+				<td>{{ formatSize(file.size) }}</td>
+				<td>{{ file.createdAt }}</td>
+				<td>
+					<dsb-button-atom
+						[idButton]="file.id"
+						text="Ver"
+						type="secondary"
+						(clicker)="onSelect($event)" >
+					</dsb-button-atom>
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>
