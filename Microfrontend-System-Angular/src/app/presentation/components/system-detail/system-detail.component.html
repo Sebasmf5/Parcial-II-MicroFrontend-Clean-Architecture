@@ -1,0 +1,10 @@
+<div class="card mb-3">
+	<div class="card-body">
+		<h5 class="card-title">Archivo — {{ file.fileName }}</h5>
+		<p class="card-text mb-1"><strong>Id:</strong> {{ file.id }}</p>
+		<p class="card-text mb-1"><strong>Tipo MIME:</strong> {{ file.mimeType }}</p>
+		<p class="card-text mb-1"><strong>Carpeta:</strong> {{ file.directoryPath }}</p>
+		<p class="card-text mb-1"><strong>Tamaño:</strong> {{ formatSize(file.size) }}</p>
+		<p class="card-text"><strong>Fecha de creación:</strong> {{ file.createdAt }}</p>
+	</div>
+</div>
