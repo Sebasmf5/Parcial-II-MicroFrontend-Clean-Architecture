@@ -1,12 +1,13 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { BadgeAtom, BadgeType, ButtonAtom } from '@brejcha13320/design-system-bootstrap';
-import { SystemMimeFamily, SystemFile } from '../../../core/domain/models/system.model';
+import { SystemFile, SystemMimeFamily } from '../../../core/domain/models/system.model';
+import { formatSize } from '../../utils/format-size.util';
 
 /**
  * Componente de tabla de archivos del sistema.
  *
  * Muestra un listado de archivos con un badge por familia MIME
- * de correo y un botón para ver el detalle.
+ * y un botón para ver el detalle.
  *
  * @remarks
  * Recibe los archivos por el Input `files` y avisa al padre,
@@ -30,24 +31,51 @@ export class SystemTableComponent {
   @Input() files: SystemFile[] = [];
 
   /**
-   * Emite el id del archivo que se quiere ver en detalle.
+   * Emite el id (UUID) del archivo que se quiere ver en detalle.
    */
-  @Output() selected = new EventEmitter<number>();
+  @Output() selected = new EventEmitter<string>();
 
   /**
-   * Mapeo de familias MIME de correo a tipos de Badge.
+   * Mapeo de familias MIME a tipos de Badge.
    *
    * @remarks
-   * - 'image' → 'danger' (rojo)
-   * - 'outlook.com' → 'primary' (azul)
-   * - 'yahoo.com' → 'warning' (amarillo)
-   * - 'hotmail.com' → 'info' (celeste)
+   * - 'application' → 'primary' (azul)
+   * - 'audio' → 'warning' (amarillo)
+   * - 'image' → 'success' (verde)
+   * - 'text' → 'secondary' (gris)
+   * - 'video' → 'danger' (rojo)
    */
   familyMap: Record<SystemMimeFamily, BadgeType> = {
-    'image': 'danger',
-    'outlook.com': 'primary',
-    'yahoo.com': 'warning',
-    'hotmail.com': 'info',
+    application: 'primary',
+    audio: 'warning',
+    image: 'success',
+    text: 'secondary',
+    video: 'danger',
+  }
+
+  /**
+   * Obtiene el tipo de Badge de un tipo MIME.
+   *
+   * @remarks
+   * Toma la familia (lo que va antes de la barra). Si la familia no está
+   * en el mapa, por ejemplo `font`, devuelve 'dark'.
+   *
+   * @param mimeType - Tipo MIME completo, por ejemplo `image/png`
+   * @returns Tipo de Badge que se debe usar
+   */
+  getBadgeType(mimeType: string): BadgeType {
+    const family = mimeType.split('/')[0] as SystemMimeFamily;
+    return this.familyMap[family] ?? 'dark';
+  }
+
+  /**
+   * Convierte el tamaño del archivo (bytes) a un texto legible.
+   *
+   * @param bytes - Tamaño en bytes
+   * @returns Texto con el tamaño y su unidad
+   */
+  formatSize(bytes: number): string {
+    return formatSize(bytes);
   }
 
   /**
@@ -56,6 +84,6 @@ export class SystemTableComponent {
    * @param idButton - Id del botón pulsado, que es el id del archivo
    */
   onSelect(idButton: string): void {
-    this.selected.emit(Number(idButton));
+    this.selected.emit(idButton);
   }
 }

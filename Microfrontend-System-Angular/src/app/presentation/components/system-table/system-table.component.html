@@ -3,30 +3,30 @@
 		<tr>
 			<th scope="col">Id</th>
 			<th scope="col">Archivo</th>
-			<th scope="col">Correo</th>
-			<th scope="col">Proveedor</th>
-			<th scope="col">IPv4</th>
-			<th scope="col">Última conexión</th>
+			<th scope="col">Tipo MIME</th>
+			<th scope="col">Carpeta</th>
+			<th scope="col">Tamaño</th>
+			<th scope="col">Creación</th>
 			<th scope="col">Detalle</th>
 		</tr>
 	</thead>
 	<tbody>
-		@for (file of files; track file) {
+		@for (file of files; track file.id) {
 			<tr>
-				<th scope="row">{{ file.id }}</th>
-				<td>{{ file.filename }}</td>
-				<td>{{ file.email }}</td>
-				<td>
+				<th scope="row" class="small font-monospace text-nowrap">{{ file.id }}</th>
+				<td>{{ file.fileName }}</td>
+				<td class="text-break">
 					<dsb-badge-atom
-						[text]="file.family"
-						[type]="familyMap[file.family]" >
+						[text]="file.mimeType"
+						[type]="getBadgeType(file.mimeType)" >
 					</dsb-badge-atom>
 				</td>
-				<td>{{ file.ipv4 }}</td>
-				<td>{{ file.lastLogin }}</td>
+				<td>{{ file.directoryPath }}</td>
+				<td>{{ formatSize(file.size) }}</td>
+				<td>{{ file.createdAt }}</td>
 				<td>
 					<dsb-button-atom
-						[idButton]="'' + file.id"
+						[idButton]="file.id"
 						text="Ver"
 						type="secondary"
 						(clicker)="onSelect($event)" >

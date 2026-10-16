@@ -24,11 +24,15 @@ describe('SystemDetailComponent', () => {
 
   it('debería mostrar los datos del archivo', () => {
     const text = fixture.nativeElement.textContent;
-    expect(text).toContain('Archivo #1');
-    expect(text).toContain('Maxwell_OReilly');
-    expect(text).toContain('maxwell.oreilly@image');
-    expect(text).toContain('229.151.59.145');
-    expect(text).toContain('https://prestigious-trolley.com');
-    expect(text).toContain('2026-10-10');
+    expect(text).toContain('reporte_anual.pdf');
+    expect(text).toContain('9b2d6f7e-3c1a-4f5b-8a60-1d2e3f4a5b6c');
+    expect(text).toContain('application/pdf');
+    expect(text).toContain('/usr/local/bin');
+    expect(text).toContain('200.0 KB');
+    expect(text).toContain('2025-08-14');
+  });
+
+  it('debería convertir el tamaño a un texto legible', () => {
+    expect(component.formatSize(1572864)).toBe('1.5 MB');
   });
 });

@@ -1,10 +1,10 @@
 <div class="card mb-3">
 	<div class="card-body">
-		<h5 class="card-title">Archivo #{{ file.id }} — {{ file.filename }}</h5>
-		<p class="card-text mb-1"><strong>Correo:</strong> {{ file.email }}</p>
-		<p class="card-text mb-1"><strong>Proveedor:</strong> {{ file.family }}</p>
-		<p class="card-text mb-1"><strong>IPv4:</strong> {{ file.ipv4 }}</p>
-		<p class="card-text mb-1"><strong>Sitio web:</strong> {{ file.website }}</p>
-		<p class="card-text"><strong>Última conexión:</strong> {{ file.lastLogin }}</p>
+		<h5 class="card-title">Archivo — {{ file.fileName }}</h5>
+		<p class="card-text mb-1"><strong>Id:</strong> {{ file.id }}</p>
+		<p class="card-text mb-1"><strong>Tipo MIME:</strong> {{ file.mimeType }}</p>
+		<p class="card-text mb-1"><strong>Carpeta:</strong> {{ file.directoryPath }}</p>
+		<p class="card-text mb-1"><strong>Tamaño:</strong> {{ formatSize(file.size) }}</p>
+		<p class="card-text"><strong>Fecha de creación:</strong> {{ file.createdAt }}</p>
 	</div>
 </div>

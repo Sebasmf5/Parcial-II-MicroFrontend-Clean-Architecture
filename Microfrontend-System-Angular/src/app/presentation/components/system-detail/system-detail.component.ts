@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { SystemFile } from '../../../core/domain/models/system.model';
+import { formatSize } from '../../utils/format-size.util';
 
 /**
  * Tarjeta con el detalle de un archivo del sistema.
@@ -10,7 +11,7 @@ import { SystemFile } from '../../../core/domain/models/system.model';
  *
  * @example
  * ```html
- * <app-system-detail [file]="selectedUser"></app-system-detail>
+ * <app-system-detail [file]="selectedFile"></app-system-detail>
  * ```
  */
 @Component({
@@ -22,4 +23,14 @@ export class SystemDetailComponent {
    * Archivo que se va a mostrar.
    */
   @Input({ required: true }) file!: SystemFile;
+
+  /**
+   * Convierte el tamaño del archivo (bytes) a un texto legible.
+   *
+   * @param bytes - Tamaño en bytes
+   * @returns Texto con el tamaño y su unidad
+   */
+  formatSize(bytes: number): string {
+    return formatSize(bytes);
+  }
 }
