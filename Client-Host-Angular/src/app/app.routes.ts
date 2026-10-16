@@ -31,6 +31,23 @@ export const routes: Routes = [
   },
 
   /**
+   * Ruta de archivos del sistema.
+   *
+   * @remarks
+   * Carga de forma remota el componente `SystemPage`
+   * expuesto por el Microfrontend de System (puerto 4203).
+   */
+  {
+    path: 'system',
+    loadComponent: () =>
+      loadRemoteModule({
+        type: 'module',
+        remoteEntry: 'http://localhost:4203/remoteEntry.js',
+        exposedModule: './SystemPage',
+      }).then(m => m.SystemPage),
+  },
+
+  /**
    * Ruta comodín.
    *
    * @remarks
