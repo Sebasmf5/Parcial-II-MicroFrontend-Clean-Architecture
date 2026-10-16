@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker';
-import { SYSTEM_MIME_FAMILIES, SystemMimeFamily, SystemFile } from "../../domain/models/system.model";
+import { SystemFile, SystemMimeFamily } from "../../domain/models/system.model";
+import { CustomError } from "../web/errors/custom.error";
 
 /**
  * Datasource de archivos del sistema.
@@ -8,96 +9,109 @@ import { SYSTEM_MIME_FAMILIES, SystemMimeFamily, SystemFile } from "../../domain
  * Pertenece a la **capa de infraestructura**. Genera archivos
  * ficticios con el módulo `faker.system`.
  *
- * Cada archivo se genera con `faker.seed(id)`, así que el mismo id
- * siempre da el mismo archivo. Gracias a eso el listado, el detalle
- * y el filtro por familia MIME muestran datos que coinciden entre sí.
+ * Al arrancar crea un catálogo fijo de archivos. Cada archivo se genera
+ * con `faker.seed(posición)`, así que el catálogo es siempre el mismo.
+ * Gracias a eso el listado, el detalle por id y el filtro por familia MIME
+ * muestran datos que coinciden entre sí.
  */
 export class SystemDatasource {
 
     /**
-     * Cantidad máxima de ids que se revisan al filtrar por familia MIME.
+     * Cantidad de archivos que tiene el catálogo.
      */
-    private readonly MAX_USERS = 1000;
+    private readonly CATALOG_SIZE = 500;
 
     /**
-     * Obtiene un listado de archivos con ids del 1 a `countFiles`.
+     * Fecha de referencia para generar las fechas de creación.
+     * Es fija para que la fecha de un archivo no cambie entre peticiones.
+     */
+    private readonly REFERENCE_DATE = new Date('2026-01-01T00:00:00.000Z');
+
+    /**
+     * Catálogo de archivos generados con faker.
+     */
+    private readonly catalog: SystemFile[] = this.buildCatalog();
+
+    /**
+     * Obtiene los primeros `countFiles` archivos del catálogo.
      *
-     * @param countFiles Cantidad de archivos a generar
+     * @param countFiles Cantidad de archivos a devolver
      * @returns Promesa que resuelve un arreglo de archivos
      */
     async getAll(countFiles: number): Promise<SystemFile[]> {
-        const files: Promise<SystemFile>[] = [];
-
-        for (let i = 1; i <= countFiles; i++) {
-            files.push(this.generateUser(i));
-        }
-
-        return Promise.all(files);
+        return this.catalog.slice(0, countFiles);
     }
 
     /**
      * Obtiene el archivo con el identificador indicado.
      *
-     * @param id Identificador del archivo
-     * @returns Promesa que resuelve el archivo (siempre el mismo para el mismo id)
+     * @param id Identificador (UUID) del archivo
+     * @returns Promesa que resuelve el archivo
+     * @throws CustomError 404 si no existe un archivo con ese id
      */
     async getById(id: string): Promise<SystemFile> {
-        return this.generateUser(id);
+        const file = this.catalog.find((item) => item.id === id);
+
+        if (!file) {
+            throw CustomError.notFound(`No existe un archivo con el id: ${id}`);
+        }
+
+        return file;
     }
 
     /**
-     * Filtra los archivos que tienen el familia MIME indicado.
+     * Filtra los archivos cuyo tipo MIME es de la familia indicada.
      *
      * @remarks
-     * Recorre los archivos desde el id 1 y se queda con los que tienen ese
-     * familia MIME, hasta juntar `countFiles` o llegar a `MAX_USERS`.
+     * Una familia es la parte del tipo MIME que va antes de la barra:
+     * `image/png` es de la familia `image`.
      *
-     * @param family Familia MIME del archivo (application, audio, image, text o video)
+     * @param family Familia MIME (application, audio, image, text o video)
      * @param countFiles Cantidad de archivos a devolver
-     * @returns Promesa que resuelve un arreglo de archivos de ese familia MIME
+     * @returns Promesa que resuelve un arreglo de archivos de esa familia
      */
     async getByMimeFamily(family: SystemMimeFamily, countFiles: number): Promise<SystemFile[]> {
+        return this.catalog
+            .filter((item) => item.mimeType.startsWith(`${family}/`))
+            .slice(0, countFiles);
+    }
+
+    /**
+     * Construye el catálogo de archivos.
+     *
+     * @returns Arreglo con `CATALOG_SIZE` archivos
+     */
+    private buildCatalog(): SystemFile[] {
         const files: SystemFile[] = [];
 
-        for (let id = 1; id <= this.MAX_USERS && files.length < countFiles; id++) {
-            const file = await this.generateUser(id);
-            if (file.family === family) {
-                files.push(file);
-            }
+        for (let position = 1; position <= this.CATALOG_SIZE; position++) {
+            files.push(this.generateFile(position));
         }
 
         return files;
     }
 
     /**
-     * Genera el archivo ficticio de un id.
+     * Genera el archivo ficticio de una posición del catálogo.
      *
      * @remarks
-     * `faker.seed(id)` hace que faker devuelva siempre los mismos valores
-     * para el mismo id. El archivo y el correo salen del mismo nombre y
-     * apellido para que se vean relacionados. La fecha se calcula desde el inicio del día para
-     * que tampoco cambie entre una petición y otra.
+     * `faker.seed(position)` hace que faker devuelva siempre los mismos
+     * valores para la misma posición, incluido el UUID.
      *
-     * @param id Identificador único del archivo
-     * @returns Promesa que resuelve el archivo generado
+     * @param position Posición del archivo en el catálogo
+     * @returns Archivo generado
      */
-    private generateUser(id: number): Promise<SystemFile> {
-        faker.seed(id);
-        const family = faker.helpers.arrayElement(SYSTEM_MIME_FAMILIES);
-        const firstName = faker.person.firstName();
-        const lastName = faker.person.lastName();
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+    private generateFile(position: number): SystemFile {
+        faker.seed(position);
 
-        return Promise.resolve({
-            id,
-            filename: faker.system.filename({ firstName, lastName }),
-            email: faker.system.email({ firstName, lastName, family }),
-            family,
-            ipv4: faker.system.ipv4(),
-            website: faker.system.url(),
-            lastLogin: faker.date.recent({ days: 30, refDate: today }).toISOString().slice(0, 10),
-        });
+        return {
+            id: faker.string.uuid(),
+            fileName: faker.system.fileName(),
+            mimeType: faker.system.mimeType(),
+            directoryPath: faker.system.directoryPath(),
+            size: faker.number.int({ min: 1024, max: 5000000 }),
+            createdAt: faker.date.past({ years: 2, refDate: this.REFERENCE_DATE }).toISOString().slice(0, 10),
+        };
     }
 
 }
