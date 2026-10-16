@@ -1,0 +1,81 @@
+<div class="row g-3 mb-3">
+
+    <div class="col-lg-7">
+        <div class="card h-100">
+            <div class="card-body">
+                <h6 class="card-title">Caso de uso · Filtrar por dominio del correo</h6>
+                <div class="d-flex flex-wrap gap-2">
+                    @for(filter of filters; track filter.value){
+                        <dsb-button-atom
+                            [idButton]="filter.value"
+                            [text]="filter.text"
+                            [type]="selectedFilter === filter.value ? 'primary' : 'light'"
+                            (clicker)="onFilter($event)" >
+                        </dsb-button-atom>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="card h-100">
+            <div class="card-body">
+                <h6 class="card-title">Caso de uso · Buscar archivo por id</h6>
+                <div class="d-flex gap-2">
+                    <input
+                        #idInput
+                        type="number"
+                        min="1"
+                        class="form-control"
+                        placeholder="Ej: 5"
+                        aria-label="Id del archivo"
+                        (keyup.enter)="onSearch(idInput.value)" />
+                    <dsb-button-atom
+                        idButton="search"
+                        text="Buscar"
+                        type="primary"
+                        (clicker)="onSearch(idInput.value)" >
+                    </dsb-button-atom>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@switch(detailState){
+
+    @case('loading'){
+        <app-alert alertState="loading" text="Cargando Detalle..." ></app-alert>
+    }
+
+    @case('error'){
+        <app-alert alertState="error" [text]="detailErrorText" ></app-alert>
+    }
+
+    @case('success'){
+        @if(selectedUser){
+            <app-system-detail [file]="selectedUser" ></app-system-detail>
+        }
+    }
+
+}
+
+<h5 class="mb-3">Caso de uso · {{ listTitle }}</h5>
+
+@switch(state){
+
+    @case('loading'){
+        <app-alert alertState="loading" text="Cargando Archivos..." ></app-alert>
+    }
+
+    @case('error'){
+        <app-alert alertState="error" text="Error al Cargar los Archivos" ></app-alert>
+    }
+
+    @case('success'){
+        <app-system-table [files]="files" (selected)="onSelect($event)" ></app-system-table>
+    }
+
+}

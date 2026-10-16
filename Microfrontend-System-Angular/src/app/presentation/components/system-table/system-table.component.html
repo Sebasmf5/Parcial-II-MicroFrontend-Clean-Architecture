@@ -1,0 +1,38 @@
+<table class="table table-striped border">
+	<thead>
+		<tr>
+			<th scope="col">Id</th>
+			<th scope="col">Archivo</th>
+			<th scope="col">Correo</th>
+			<th scope="col">Proveedor</th>
+			<th scope="col">IPv4</th>
+			<th scope="col">Última conexión</th>
+			<th scope="col">Detalle</th>
+		</tr>
+	</thead>
+	<tbody>
+		@for (file of files; track file) {
+			<tr>
+				<th scope="row">{{ file.id }}</th>
+				<td>{{ file.filename }}</td>
+				<td>{{ file.email }}</td>
+				<td>
+					<dsb-badge-atom
+						[text]="file.family"
+						[type]="familyMap[file.family]" >
+					</dsb-badge-atom>
+				</td>
+				<td>{{ file.ipv4 }}</td>
+				<td>{{ file.lastLogin }}</td>
+				<td>
+					<dsb-button-atom
+						[idButton]="'' + file.id"
+						text="Ver"
+						type="secondary"
+						(clicker)="onSelect($event)" >
+					</dsb-button-atom>
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>
