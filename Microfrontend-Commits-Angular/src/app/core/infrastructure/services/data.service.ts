@@ -6,27 +6,62 @@ import { mockCommits } from '../../../mocks/commits.mock';
 import { Commit } from '../../domain/models/commit.model';
 
 /**
- * Data source de commits para la infraestructura del microfrontend.
+ * Fuente de datos de commits para la infraestructura del microfrontend.
  *
- * Provee dos origenes de datos:
- * - Mocks locales para desarrollo y pruebas de interfaz.
- * - Microservicio Spring Boot mediante HTTP.
+ * @description
+ * Pertenece a la **capa de infraestructura** y provee dos orígenes de datos:
+ * - Mocks locales, para desarrollo y pruebas de interfaz.
+ * - Microservicio Spring Boot, mediante HTTP.
  *
- * No contiene reglas de negocio ni debe ser consumido directamente por
- * los componentes de presentacion. Los repositorios de infraestructura
- * adaptan este servicio al contrato del dominio.
+ * @remarks
+ * - No contiene reglas de negocio.
+ * - Los componentes de presentación no deben consumirlo directamente:
+ *   los repositorios de infraestructura lo adaptan al contrato del dominio.
+ * - La URL base del microservicio se toma de `environment.baseUrlSpringBoot`.
+ *
+ * @example
+ * ```ts
+ * private readonly dataService = inject(DataService);
+ *
+ * this.dataService.getAllCommitsLocal().subscribe(commits => {
+ *   // manejo de resultados
+ * });
+ * ```
+ *
+ * @architecture Clean Architecture
+ * @layer Infrastructure
+ *
+ * @see CommitLocalRepositoryImpl
+ * @see CommitSpringBootRepositoryImpl
  */
 @Injectable({ providedIn: 'root' })
 export class DataService {
+
+  /** Cliente HTTP de Angular usado para consumir el microservicio. */
   private readonly httpClient = inject(HttpClient);
+
+  /** URL base del microservicio Spring Boot. */
   private readonly springBootUrl = environment.baseUrlSpringBoot;
 
-  /** Obtiene todos los commits desde los mocks locales. */
+  /**
+   * Obtiene todos los commits desde los mocks locales.
+   *
+   * @returns {Observable<Commit[]>}
+   * Observable que emite una copia del listado de mocks, para que quien
+   * lo consuma no modifique el arreglo original.
+   */
   getAllCommitsLocal(): Observable<Commit[]> {
     return of([...mockCommits]);
   }
 
-  /** Obtiene un commit por hash desde los mocks locales. */
+  /**
+   * Obtiene un commit por su hash desde los mocks locales.
+   *
+   * @param {string} hash Identificador único del commit.
+   * @returns {Observable<Commit>}
+   * Observable que emite el commit encontrado o, si no existe,
+   * un error con el mensaje `Commit not found: <hash>`.
+   */
   getCommitByHashLocal(hash: string): Observable<Commit> {
     const commit = mockCommits.find((item) => item.hash === hash);
 
@@ -35,7 +70,14 @@ export class DataService {
       : throwError(() => new Error(`Commit not found: ${hash}`));
   }
 
-  /** Filtra commits por correo desde los mocks locales. */
+  /**
+   * Filtra los commits por correo del autor desde los mocks locales.
+   *
+   * @param {string} authorEmail Correo electrónico del autor.
+   * @returns {Observable<Commit[]>}
+   * Observable que emite los commits del autor. La comparación no
+   * distingue entre mayúsculas y minúsculas.
+   */
   getCommitsByAuthorEmailLocal(authorEmail: string): Observable<Commit[]> {
     return of(
       mockCommits.filter(
@@ -44,17 +86,36 @@ export class DataService {
     );
   }
 
-  /** Obtiene todos los commits desde Spring Boot. */
+  /**
+   * Obtiene todos los commits desde Spring Boot.
+   *
+   * @returns {Observable<Commit[]>}
+   * Observable con la respuesta de `GET /commits`.
+   */
   getAllCommitsSpringBoot(): Observable<Commit[]> {
     return this.httpClient.get<Commit[]>(`${this.springBootUrl}/commits`);
   }
 
-  /** Obtiene un commit por hash desde Spring Boot. */
+  /**
+   * Obtiene un commit por su hash desde Spring Boot.
+   *
+   * @param {string} hash Identificador único del commit.
+   * @returns {Observable<Commit>}
+   * Observable con la respuesta de `GET /commits/{hash}`. El hash se
+   * codifica con `encodeURIComponent` antes de armar la URL.
+   */
   getCommitByHashSpringBoot(hash: string): Observable<Commit> {
     return this.httpClient.get<Commit>(`${this.springBootUrl}/commits/${encodeURIComponent(hash)}`);
   }
 
-  /** Filtra commits por correo desde Spring Boot. */
+  /**
+   * Filtra los commits por correo del autor desde Spring Boot.
+   *
+   * @param {string} authorEmail Correo electrónico del autor.
+   * @returns {Observable<Commit[]>}
+   * Observable con la respuesta de `GET /commits/author/{authorEmail}`.
+   * El correo se codifica con `encodeURIComponent` antes de armar la URL.
+   */
   getCommitsByAuthorEmailSpringBoot(authorEmail: string): Observable<Commit[]> {
     return this.httpClient.get<Commit[]>(
       `${this.springBootUrl}/commits/author/${encodeURIComponent(authorEmail)}`,

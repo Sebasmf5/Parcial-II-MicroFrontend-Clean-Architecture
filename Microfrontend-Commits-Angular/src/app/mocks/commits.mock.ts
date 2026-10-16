@@ -1,6 +1,19 @@
 import { Commit } from '../core/domain/models/commit.model';
 
-/** Datos simulados para desarrollo y pruebas del microfrontend. */
+/**
+ * Datos simulados de commits.
+ *
+ * @remarks
+ * Se usan en dos lugares:
+ * - Como fuente de datos de `CommitLocalRepositoryImpl` (a través de
+ *   `DataService`) mientras se desarrolla la interfaz sin backend.
+ * - Como datos de prueba en las pruebas unitarias.
+ *
+ * Contiene 5 commits con los hashes `0000001` a `0000005`.
+ *
+ * @see Commit
+ * @see DataService
+ */
 export const mockCommits: Commit[] = [
   {
     hash: '0000001',

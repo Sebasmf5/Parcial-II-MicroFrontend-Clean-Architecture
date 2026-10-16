@@ -44,7 +44,24 @@ export interface Commit {
 	files: string[];
 }
 
-/** Ramas generadas actualmente por el datasource del backend. */
+/**
+ * Tipo de rama de un commit.
+ *
+ * @remarks
+ * Restringe las ramas a los valores que genera actualmente el
+ * datasource del backend:
+ * - 'main'
+ * - 'develop'
+ * - 'feature/commits'
+ * - 'fix/commit-filter'
+ *
+ * Se utiliza principalmente para mapear badges de colores en la tabla.
+ *
+ * @example
+ * ```ts
+ * const rama: CommitBranch = 'develop';
+ * ```
+ */
 export type CommitBranch =
 	| 'main'
 	| 'develop'
