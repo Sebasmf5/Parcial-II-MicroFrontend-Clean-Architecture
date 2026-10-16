@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import { environment } from '../../../../environments/environment';
-import { mockCommits } from '../../../../mocks/commits.mock';
+import { mockCommits } from '../../../mocks/commits.mock';
 import { Commit } from '../../domain/models/commit.model';
 
 /**
