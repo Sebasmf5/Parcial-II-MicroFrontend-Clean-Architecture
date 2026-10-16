@@ -1,0 +1,33 @@
+<div class="container py-4">
+  <h2 class="mb-3">Commits</h2>
+
+  <div class="row g-2 mb-3">
+    <div class="col-md-5">
+      <div class="input-group">
+        <input class="form-control" placeholder="Filtrar por hash" [(ngModel)]="hash" />
+        <button class="btn btn-primary" (click)="filterByHash()">Buscar</button>
+      </div>
+    </div>
+    <div class="col-md-5">
+      <div class="input-group">
+        <input class="form-control" placeholder="Filtrar por email" [(ngModel)]="email" />
+        <button class="btn btn-primary" (click)="filterByEmail()">Buscar</button>
+      </div>
+    </div>
+    <div class="col-md-2">
+      <button class="btn btn-outline-secondary w-100" (click)="loadAll()">Ver todos</button>
+    </div>
+  </div>
+
+  @switch (state) {
+    @case ('loading') {
+      <app-alert alertState="loading" text="Cargando commits..."></app-alert>
+    }
+    @case ('error') {
+      <app-alert alertState="error" text="Error al cargar los commits"></app-alert>
+    }
+    @case ('success') {
+      <app-commit-table [commits]="commits"></app-commit-table>
+    }
+  }
+</div>

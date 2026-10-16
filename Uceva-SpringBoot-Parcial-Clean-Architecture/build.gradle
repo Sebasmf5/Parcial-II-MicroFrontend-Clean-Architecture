@@ -1,0 +1,41 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '4.1.1'
+    id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'co.edu.uceva'
+version = '0.0.1-SNAPSHOT'
+description = 'Uceva-SpringBoot-Parcial-Clean-Architecture'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // API REST (Spring Web)
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    // Herramientas de desarrollo
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+    // Documentación Swagger / OpenAPI 3
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
+
+    // Generador de datos de prueba
+    implementation 'com.github.javafaker:javafaker:0.12'
+
+    // Pruebas (Testing)
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

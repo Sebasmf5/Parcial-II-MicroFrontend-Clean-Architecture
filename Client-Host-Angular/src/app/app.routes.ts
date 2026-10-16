@@ -48,6 +48,23 @@ export const routes: Routes = [
   },
 
   /**
+   * Ruta de commits.
+   *
+   * @remarks
+   * Carga de forma remota el componente `CommitsPage`
+   * expuesto por el Microfrontend de Commits (puerto 4202).
+   */
+  {
+    path: 'commits',
+    loadComponent: () =>
+      loadRemoteModule({
+        type: 'module',
+        remoteEntry: 'http://localhost:4202/remoteEntry.js',
+        exposedModule: './CommitsPage',
+      }).then(m => m.CommitsPage),
+  },
+
+  /**
    * Ruta comodín.
    *
    * @remarks
