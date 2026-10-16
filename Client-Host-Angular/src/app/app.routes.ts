@@ -13,8 +13,7 @@ import { loadRemoteModule } from '@angular-architects/module-federation';
  * - Redirección por defecto para rutas no existentes
  */
 export const routes: Routes = [
-
-  /**
+ /**
    * Ruta de usuarios de internet.
    *
    * @remarks
