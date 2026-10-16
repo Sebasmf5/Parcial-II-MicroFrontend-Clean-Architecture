@@ -1,59 +1,81 @@
-# MicrofrontendSystemAngular
+# Microfrontend System (Angular)
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.12.
+Microfrontend del módulo **System** (archivos del sistema). Angular 20 + Webpack Module Federation, organizado con **Clean Architecture**. Se carga dentro del Host (`Client-Host-Angular`) en la ruta `/system` y consume el microservicio `Microservice-System-NodeJS`.
 
-## Development server
+## Datos del proyecto
 
-To start a local development server, run:
+| Dato | Valor |
+| --- | --- |
+| Puerto | `4203` |
+| RemoteEntry | `http://localhost:4203/remoteEntry.js` |
+| Nombre en Module Federation | `mf-system` |
+| Módulo que expone | `./SystemPage` |
+| Microservicio que consume | `Microservice-System-NodeJS` (`http://localhost:3003`) |
 
-```bash
-ng serve
-```
+## Mapeo Microfrontend → Microservicio
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+| Caso de uso (MF) | Método del repositorio | Servicio (API Gateway) | Endpoint del microservicio |
+| --- | --- | --- | --- |
+| `GetAllSystemFilesUseCase` | `getAll(countFiles)` | `getAllFiles` | `GET /api/system/{countFiles}` |
+| `GetSystemFileByIdUseCase` | `getById(id)` | `getFileById` | `GET /api/system/detail/{id}` |
+| `GetSystemFilesByMimeFamilyUseCase` | `getByMimeFamily(family, countFiles)` | `getFilesByMimeFamily` | `GET /api/system/family/{family}/{countFiles}` |
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
+## Instalación
 
 ```bash
-ng build
+npm install
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+## Ejecución
 
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+Primero debe estar corriendo el microservicio (puerto 3003). Después:
 
 ```bash
-ng test
+npm run start
 ```
 
-## Running end-to-end tests
+- Microfrontend solo: `http://localhost:4203`
+- RemoteEntry: `http://localhost:4203/remoteEntry.js`
+- Dentro del Host: `http://localhost:4200/system`
 
-For end-to-end (e2e) testing, run:
+## Pruebas unitarias y cobertura
 
 ```bash
-ng e2e
+npx jest --coverage
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+La cobertura debe quedar por encima del 90% (actualmente 100%). El reporte queda en la carpeta `coverage/`.
 
-## Additional Resources
+## Documentación técnica con Compodoc
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+```bash
+npm run compodoc
+```
+
+Genera la carpeta `documentation/` (no se sube al repositorio). Para verla, abrir `documentation/index.html`.
+
+## Arquitectura (Clean Architecture)
+
+```
+src/app/
+├── core/
+│   ├── domain/                       Capa de dominio (no depende de nada)
+│   │   ├── models/system.model.ts            Entidad SystemFile y SystemMimeFamily
+│   │   └── repositories/system.repository.ts Contrato (clase abstracta)
+│   ├── application/usecases/         Capa de aplicación
+│   │   ├── get-all-system-files.usecase.ts
+│   │   ├── get-system-file-by-id.usecase.ts
+│   │   └── get-system-files-by-mime-family.usecase.ts
+│   └── infrastructure/               Capa de infraestructura
+│       ├── services/system.service.ts            API Gateway (HTTP al microservicio)
+│       └── repositories/system.repository.impl.ts Implementa el contrato del dominio
+├── presentation/                     Capa de presentación
+│   ├── pages/system/system.page.ts           Página que expone el microfrontend
+│   ├── components/                           alert, system-table, system-detail
+│   ├── interfaces/state.interface.ts
+│   └── utils/format-size.util.ts
+├── mocks/system.mocks.ts             Datos de ejemplo para las pruebas
+└── system.providers.ts               Composición: contrato → implementación
+```
+
+Reglas de dependencia: `presentation` usa los casos de uso; los casos de uso solo conocen el contrato `SystemRepository` (dominio); la implementación (`infrastructure`) es la única que conoce el servicio HTTP y la URL del microservicio (`src/environments/environment.ts`).
