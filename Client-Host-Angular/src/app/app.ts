@@ -56,6 +56,7 @@ export class App {
     },
     navLinks: [
       { text: 'Internet', url: '/internet' },
+      { text: 'Commits', url: '/commits' },
     ]
   };
 }
