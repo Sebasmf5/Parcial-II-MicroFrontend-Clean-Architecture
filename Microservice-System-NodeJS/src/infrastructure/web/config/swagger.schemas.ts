@@ -7,40 +7,32 @@
  *       description: Representa un archivo del sistema generado con faker.system
  *       required:
  *         - id
- *         - filename
- *         - email
- *         - family
- *         - ipv4
- *         - website
- *         - lastLogin
+ *         - fileName
+ *         - mimeType
+ *         - directoryPath
+ *         - size
+ *         - createdAt
  *       properties:
  *         id:
- *           type: number
- *           example: 1
- *         filename:
  *           type: string
- *           example: Maxwell_OReilly
- *         email:
+ *           format: uuid
+ *           example: 9b2d6f7e-3c1a-4f5b-8a60-1d2e3f4a5b6c
+ *         fileName:
  *           type: string
- *           format: email
- *           example: maxwell.oreilly@image
- *         family:
+ *           example: reporte_anual.pdf
+ *         mimeType:
  *           type: string
- *           enum:
- *             - image
- *             - outlook.com
- *             - yahoo.com
- *             - hotmail.com
- *           example: image
- *         ipv4:
+ *           example: application/pdf
+ *         directoryPath:
  *           type: string
- *           example: 229.151.59.145
- *         website:
- *           type: string
- *           example: https://prestigious-trolley.com
- *         lastLogin:
+ *           example: /usr/local/bin
+ *         size:
+ *           type: integer
+ *           description: Tamaño en bytes
+ *           example: 204800
+ *         createdAt:
  *           type: string
  *           format: date
- *           example: 2026-10-10
+ *           example: 2025-08-14
  */
 export {};

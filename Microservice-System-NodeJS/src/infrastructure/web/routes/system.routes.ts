@@ -39,16 +39,18 @@ export class SystemRoutes {
      *           type: integer
      *           minimum: 1
      *           example: 10
-     *         description: Cantidad de archivos a generar
+     *         description: Cantidad de archivos a devolver
      *     responses:
-     *       201:
-     *         description: Lista de archivos generados
+     *       200:
+     *         description: Lista de archivos
      *         content:
      *           application/json:
      *             schema:
      *               type: array
      *               items:
      *                 $ref: '#/components/schemas/SystemFile'
+     *       400:
+     *         description: Cantidad no válida
      */
     router.get("/:countFiles", controller.getAllFiles);
 
@@ -57,7 +59,7 @@ export class SystemRoutes {
      * /api/system/detail/{id}:
      *   get:
      *     summary: Obtener un archivo por id
-     *     description: Retorna un archivo generado con el identificador solicitado.
+     *     description: Retorna el archivo que tiene el identificador (UUID) solicitado.
      *     tags:
      *       - System
      *     parameters:
@@ -65,17 +67,21 @@ export class SystemRoutes {
      *         name: id
      *         required: true
      *         schema:
-     *           type: integer
-     *           minimum: 1
-     *           example: 5
-     *         description: Identificador del archivo
+     *           type: string
+     *           format: uuid
+     *           example: 9b2d6f7e-3c1a-4f5b-8a60-1d2e3f4a5b6c
+     *         description: Identificador (UUID) del archivo. Se puede copiar de la respuesta del listado.
      *     responses:
-     *       201:
+     *       200:
      *         description: Archivo encontrado
      *         content:
      *           application/json:
      *             schema:
      *               $ref: '#/components/schemas/SystemFile'
+     *       400:
+     *         description: El id no es un UUID válido
+     *       404:
+     *         description: No existe un archivo con ese id
      */
     router.get("/detail/:id", controller.getFileById);
 
@@ -84,7 +90,7 @@ export class SystemRoutes {
      * /api/system/family/{family}/{countFiles}:
      *   get:
      *     summary: Obtener archivos por familia MIME
-     *     description: Retorna una lista de archivos que tienen todos el mismo familia MIME.
+     *     description: Retorna una lista de archivos cuyo tipo MIME es de la familia indicada (por ejemplo image/png es de la familia image).
      *     tags:
      *       - System
      *     parameters:
@@ -94,12 +100,13 @@ export class SystemRoutes {
      *         schema:
      *           type: string
      *           enum:
+     *             - application
+     *             - audio
      *             - image
-     *             - outlook.com
-     *             - yahoo.com
-     *             - hotmail.com
+     *             - text
+     *             - video
      *           example: image
-     *         description: Familia MIME del archivo (application, audio, image, text o video)
+     *         description: Familia del tipo MIME
      *       - in: path
      *         name: countFiles
      *         required: true
@@ -107,10 +114,10 @@ export class SystemRoutes {
      *           type: integer
      *           minimum: 1
      *           example: 10
-     *         description: Cantidad de archivos a generar
+     *         description: Cantidad de archivos a devolver
      *     responses:
-     *       201:
-     *         description: Lista de archivos del familia MIME solicitado
+     *       200:
+     *         description: Lista de archivos de la familia solicitada
      *         content:
      *           application/json:
      *             schema:
@@ -118,7 +125,7 @@ export class SystemRoutes {
      *               items:
      *                 $ref: '#/components/schemas/SystemFile'
      *       400:
-     *         description: Proveedor no válido
+     *         description: Familia MIME o cantidad no válida
      */
     router.get("/family/:family/:countFiles", controller.getFilesByMimeFamily);
 
