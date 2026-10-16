@@ -4,6 +4,7 @@ import { map, Observable, timer, zip } from 'rxjs';
 import { GetAllCommitsUseCase } from '../../../app/core/application/usecases/get-all-commits.usecase';
 import { GetCommitByHashUseCase } from '../../../app/core/application/usecases/get-commit-by-hash.usecase';
 import { GetCommitsByAuthorEmailUseCase } from '../../../app/core/application/usecases/get-commits-by-author-email.usecase';
+import { commitsProviders } from '../../../app/app.config';
 import { Commit } from '../../../app/core/domain/models/commit.model';
 import { AlertComponent } from '../../components/alert/alert.component';
 import { CommitTable } from '../../components/commit-table/commit-table';
@@ -29,8 +30,9 @@ export const MIN_LOADING_MS = 800;
  *
  * @remarks
  * Consume los casos de uso inyectándolos con `inject()`.
- * Los casos de uso se declaran en `providers` del componente y el
- * repositorio que usan se resuelve desde `app.config.ts`.
+ * El repositorio (`commitsProviders`, definido en `app.config.ts`) y los casos de uso
+ * se declaran en `providers` del componente, porque cuando el Host carga este
+ * microfrontend solo trae la página y el `app.config.ts` no se ejecuta.
  * Forma parte de la capa de presentación de la aplicación.
  *
  * @example
@@ -50,7 +52,12 @@ export const MIN_LOADING_MS = 800;
   selector: 'app-commits',
   templateUrl: './commits.page.html',
   imports: [FormsModule, CommitTable, AlertComponent],
-  providers: [GetAllCommitsUseCase, GetCommitByHashUseCase, GetCommitsByAuthorEmailUseCase],
+  providers: [
+    commitsProviders,
+    GetAllCommitsUseCase,
+    GetCommitByHashUseCase,
+    GetCommitsByAuthorEmailUseCase,
+  ],
 })
 export class CommitsPage implements OnInit {
   /** Listado de commits obtenidos desde los casos de uso. */

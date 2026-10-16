@@ -20,7 +20,7 @@ src/
 │   │   ├── application/       # Casos de uso (obtener todos, por hash, por autor)
 │   │   └── infrastructure/    # DataService y repositorios (local y Spring Boot)
 │   ├── mocks/                 # Datos locales de prueba
-│   ├── app.config.ts          # Aquí se elige el provider del repositorio
+│   ├── app.config.ts
 │   └── app.routes.ts
 ├── presentation/
 │   ├── components/            # alert y commit-table
@@ -35,11 +35,11 @@ src/
 CommitsPage → Caso de uso → CommitRepository (contrato) → Implementación → DataService → Mocks o Spring Boot
 ```
 
-La página y los casos de uso solo conocen el contrato `CommitRepository`. Qué implementación se usa se decide en un solo lugar: `src/app/app.config.ts`.
+La página y los casos de uso solo conocen el contrato `CommitRepository`. Qué implementación se usa se decide en un solo lugar: `src/app/app.config.ts`. Allí se exporta `commitsProviders`, que la propia página (`CommitsPage`) usa en sus `providers`. Así el repositorio viaja con la página: cuando el Host carga el microfrontend solo trae la página y el `app.config.ts` no se ejecuta.
 
 ## Cambiar de fuente de datos
 
-En `src/app/app.config.ts` deja **un solo** provider sin comentar:
+En `src/app/app.config.ts` deja **un solo** provider de `CommitRepository` sin comentar:
 
 ```ts
 // Datos locales (mocks)
